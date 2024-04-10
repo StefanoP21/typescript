@@ -33,9 +33,33 @@ function checkValidId() {
   };
 }
 
+// Property decorator
+function readonly(isWritable: boolean = true): Function {
+  return function (target: any, propertyKey: string) {
+    const descriptor: PropertyDescriptor = {
+      get() {
+        console.log(this, 'getter');
+        return 'readonly';
+      },
+
+      set(this, value) {
+        // console.log(this, value, 'setter');
+        Object.defineProperty(this, propertyKey, {
+          value: value,
+          writable: !isWritable,
+          enumerable: false,
+        });
+      },
+    };
+
+    return descriptor;
+  };
+}
+
 @blockPrototype
 @printToConsoleConditional()
 export class Pokemon {
+  @readonly(true)
   public publicApi: string = 'https://pokeapi.co/api/v2/pokemon/';
 
   constructor(public name: string) {}
